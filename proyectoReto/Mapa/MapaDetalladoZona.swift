@@ -2,23 +2,33 @@ import SwiftUI
 import InteractiveMap
 
 struct MapaDetalladoZona: View {
-    var onSelectPath: (Int) -> Void // Closure to handle selected path
+    var onSelectPath: (Int) -> Void
     @State private var clickedPath = PathData()
-    @State private var svgName = "RojoDetalladoSvg2" // Default SVG name
-    @State private var textScale: CGFloat = 1.0 // Control del tamaño del texto
-    @Environment(\.dismiss) private var dismiss // Para cerrar la vista
-
+    @State private var svgName = "RojoDetalladoSvg2"
+    @State private var textScale: CGFloat = 1.0
+    @Environment(\.dismiss) private var dismiss
+    
+    // State for zoom and pan with initial values
+    @State private var zoomScale: CGFloat = 1.0
+    @State private var lastZoomScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var isDragging = false
+    
+    // Constants for animation and zoom limits
+    private let defaultOffset = CGSize.zero
+    private let animationDuration: Double = 0.3
+    private let minScale: CGFloat = 1.0
+    private let maxScale: CGFloat = 4.0
+    
     var body: some View {
         ZStack {
             Color.white
             
-            // Mostrar el nombre capitalizado solo si es un path válido y no es "undefined"
             if clickedPath.name != "undefined", !clickedPath.name.isEmpty {
                 VStack {
                     Button(action: {
-                        // Llama a la closure con el ID deseado
-                        onSelectPath(1) // Reemplaza 1 con el ID correspondiente
-                        dismiss() // Cierra la vista
+                        onSelectPath(1)
+                        dismiss()
                     }) {
                         Text("Ir hacia \(clickedPath.name)")
                             .font(.largeTitle)
@@ -29,10 +39,10 @@ struct MapaDetalladoZona: View {
                             .cornerRadius(10)
                     }
                     .rotationEffect(.degrees(270))
-                    .scaleEffect(textScale) // Aplica el efecto de escala
-                    .animation(.easeInOut(duration: 0.2), value: textScale) // Añade animación
+                    .scaleEffect(textScale)
+                    .animation(.easeInOut(duration: 0.2), value: textScale)
                     .onAppear {
-                        textScale = 1.2 // Aumenta el tamaño del texto
+                        textScale = 1.2
                     }
                     .onChange(of: clickedPath.name) { _ in
                         textScale = 1.2
@@ -41,23 +51,61 @@ struct MapaDetalladoZona: View {
                         }
                     }
                 }
-                .offset(x: -UIScreen.screenWidth / 2 + 35)
+                .offset(x: -UIScreen.main.bounds.width / 2 + 35)
             }
 
-            HStack {
-                interactiveMapView(svgName: svgName)
-                    .rotationEffect(.degrees(180)) // Rota el mapa 180 grados
-                    .contentShape(Rectangle()) // Asegura que el área completa sea clickeable
-                    .onTapGesture {
-                        // Establece clickedPath a un valor vacío si se hace clic fuera de un path
-                        clickedPath = PathData(name: "", id: "", path: [])
-                    }
+            ScrollView([.horizontal, .vertical]) {
+                VStack {
+                    interactiveMapView(svgName: svgName)
+                        .scaleEffect(zoomScale)
+                        .offset(x: offset.width, y: offset.height)
+                        .gesture(
+                            MagnificationGesture()
+                                .onChanged { value in
+                                    let delta = value / lastZoomScale
+                                    lastZoomScale = value
+                                    
+                                    // Calculate new scale
+                                    let newScale = zoomScale * delta
+                                    
+                                    // Limit zoom scale between minScale and maxScale
+                                    zoomScale = min(max(newScale, minScale), maxScale)
+                                }
+                                .onEnded { value in
+                                    lastZoomScale = 1.0
+                                    withAnimation(.spring(duration: animationDuration)) {
+                                        zoomScale = 1.0
+                                        offset = defaultOffset
+                                    }
+                                }
+                        )
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    isDragging = true
+                                    // Scale the drag by the zoom scale to make it feel more natural
+                                    let scaledTranslation = CGSize(
+                                        width: value.translation.width * zoomScale,
+                                        height: value.translation.height * zoomScale
+                                    )
+                                    offset = scaledTranslation
+                                }
+                                .onEnded { _ in
+                                    isDragging = false
+                                    withAnimation(.spring(duration: animationDuration)) {
+                                        offset = defaultOffset
+                                    }
+                                }
+                        )
+                        .rotationEffect(.degrees(180))
+                        .padding(.vertical, UIScreen.main.bounds.width / 10)
+                        .padding(.horizontal, UIScreen.main.bounds.width / 8)
+                        .offset(x: UIScreen.screenWidth / 2 - 170)
+                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                }
             }
-            .padding(.vertical, UIScreen.screenWidth / 10)
-            .padding(.horizontal, UIScreen.screenWidth / 8)
-            .offset(x: UIScreen.screenWidth / 2 - 170)
+            .ignoresSafeArea()
         }
-        .ignoresSafeArea()
     }
 
     private func interactiveMapView(svgName: String) -> some View {
@@ -66,7 +114,6 @@ struct MapaDetalladoZona: View {
                 .stroke(clickedPath == pathData ? pathDictionary[pathData.name]?.0 ?? Color.black.opacity(0.4) : pathDictionary[pathData.name]?.0 ?? Color.black.opacity(0.4))
                 .background(InteractiveShape(pathData).fill(pathDictionary[pathData.name]?.0 ?? colores[5]!))
                 .onTapGesture {
-                    // Establece clickedPath solo si se clickea en un path
                     clickedPath = pathData
                 }
         }

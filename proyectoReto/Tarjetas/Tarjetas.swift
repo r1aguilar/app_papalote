@@ -44,10 +44,13 @@ struct Actividad2: Identifiable, Codable {
 
 extension Tarjeta {
     static let datosEjemplo = [
-        Tarjeta(idTarjeta: 1, tipo: 4, texto: "¡Es tu turno!", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 1),
+        Tarjeta(idTarjeta: 1, tipo: 4, texto: "¡Es tu turno!", imagenUrl: "https://www.miau.com.mx/wp-content/uploads/2014/09/gatito.jpg", ordenLista: 1),
         Tarjeta(idTarjeta: 2, tipo: 3, texto: "Sigue apilando las piezas.", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 2),
         Tarjeta(idTarjeta: 3, tipo: 2, texto: "¿Listo para el desafío?", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 3),
-        Tarjeta(idTarjeta: 4, tipo: 1, texto: "Cuidado, se puede caer.", imagenUrl: "", ordenLista: 4)
+        Tarjeta(idTarjeta: 4, tipo: 1, texto: "Cuidado, se puede caer.", imagenUrl: "", ordenLista: 4),
+        Tarjeta(idTarjeta: 3, tipo: 2, texto: "¿Listo para el desafío?", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 3),
+        Tarjeta(idTarjeta: 2, tipo: 3, texto: "Sigue apilando las piezas.", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 2),
+        Tarjeta(idTarjeta: 3, tipo: 2, texto: "¿Listo para el desafío?", imagenUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png", ordenLista: 3)
     ]
 }
 

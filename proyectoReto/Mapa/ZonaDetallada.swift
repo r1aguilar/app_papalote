@@ -4,7 +4,7 @@ struct ZonaDetallada: View, Identifiable {
     var id: UUID = UUID() // Identificador único
     var TituloZona: String
     var idZona: Int
-    var enfocarActividadId: Int? // ID de actividad a enfocar
+    @State var enfocarActividadId: Int? // ID de actividad a enfocar
     
     @Environment(\.dismiss) private var dismiss
 
@@ -59,7 +59,9 @@ struct ZonaDetallada: View, Identifiable {
                     Spacer()
                     
                     // Footer con botón "Ir a la vista de mapa"
-                    NavigationLink(destination: MapaDetalladoZona()) {
+                    NavigationLink(destination: MapaDetalladoZona { selectedId in
+                        enfocarActividadId = selectedId
+                    }) {
                         Text("Ir a la vista de mapa")
                             .font(.headline)
                             .foregroundColor(.white)
@@ -80,6 +82,7 @@ struct ZonaDetallada: View, Identifiable {
         }
     }
 }
+
 
 struct CeldaJugador: View {
     var unaActividad: Actividad2
@@ -111,5 +114,5 @@ struct CeldaJugador: View {
 }
 
 #Preview {
-    ZonaDetallada(TituloZona: "Pertenezco", idZona: 2, enfocarActividadId: 1)
+    ZonaDetallada(TituloZona: "Pertenezco", idZona: 2) 
 }

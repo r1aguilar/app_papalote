@@ -2,28 +2,33 @@ import SwiftUI
 import InteractiveMap
 
 struct MapaDetalladoZona: View {
+    var onSelectPath: (Int) -> Void // Closure to handle selected path
     @State private var clickedPath = PathData()
     @State private var svgName = "RojoDetalladoSvg2" // Default SVG name
     @State private var textScale: CGFloat = 1.0 // Control del tamaño del texto
-    @State private var orientation = UIDeviceOrientation.portrait
-       
-       init() {
-           // Force the application to remain in portrait mode
-           UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-           AppDelegate.orientationLock = .portrait
-       }
-    
+    @Environment(\.dismiss) private var dismiss // Para cerrar la vista
+
     var body: some View {
         ZStack {
             Color.white
             
             // Mostrar el nombre capitalizado solo si es un path válido y no es "undefined"
             if clickedPath.name != "undefined", !clickedPath.name.isEmpty {
-                Text(capitalizeFirstLetter(clickedPath.name))
+                VStack {
+                    Button(action: {
+                        // Llama a la closure con el ID deseado
+                        onSelectPath(1) // Reemplaza 1 con el ID correspondiente
+                        dismiss() // Cierra la vista
+                    }) {
+                        Text("Ir hacia \(clickedPath.name)")
+                            .font(.largeTitle)
+                            .bold()
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
                     .rotationEffect(.degrees(270))
-                    .font(.largeTitle)
-                    .bold()
-                    .offset(x: -UIScreen.screenWidth / 2 + 35)
                     .scaleEffect(textScale) // Aplica el efecto de escala
                     .animation(.easeInOut(duration: 0.2), value: textScale) // Añade animación
                     .onAppear {
@@ -35,6 +40,8 @@ struct MapaDetalladoZona: View {
                             textScale = 1.0
                         }
                     }
+                }
+                .offset(x: -UIScreen.screenWidth / 2 + 35)
             }
 
             HStack {
@@ -48,11 +55,11 @@ struct MapaDetalladoZona: View {
             }
             .padding(.vertical, UIScreen.screenWidth / 10)
             .padding(.horizontal, UIScreen.screenWidth / 8)
-            .offset(x: UIScreen.screenWidth/2 - 170)
+            .offset(x: UIScreen.screenWidth / 2 - 170)
         }
         .ignoresSafeArea()
     }
-        
+
     private func interactiveMapView(svgName: String) -> some View {
         InteractiveMap(svgName: svgName) { pathData in
             InteractiveShape(pathData)
@@ -74,6 +81,7 @@ struct MapaDetalladoZona: View {
 }
 
 #Preview {
-    MapaDetalladoZona()
+    MapaDetalladoZona { id in
+        print("Selected path ID: \(id)")
+    }
 }
-

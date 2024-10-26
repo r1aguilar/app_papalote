@@ -2,7 +2,7 @@ import SwiftUI
 import InteractiveMap
 
 struct MapaDetalladoZona: View {
-    var onSelectPath: (Int) -> Void
+    var onSelectPath: (String) -> Void
     var idZona : Int = 6
     @State private var clickedPath = PathData()
     @State private var svgName = ""
@@ -23,6 +23,7 @@ struct MapaDetalladoZona: View {
             let svgName = mapaDetallado[idZona]!
             ZStack{
                 Button(action: {
+                    onSelectPath("")
                     dismiss() // Cierra la vista actual
                 }) {
                     Image(systemName: "arrow.left")
@@ -114,6 +115,11 @@ struct MapaDetalladoZona: View {
                 .background(InteractiveShape(pathData).fill(pathDictionary[pathData.name]?.0 ?? Color.white))
                 .onTapGesture {
                     clickedPath = pathData
+                    if(clickedPath.name != "undefined"){
+                        print(clickedPath.name)
+                        onSelectPath(clickedPath.name)
+                        dismiss()
+                    }
                 }
         }
         .id(svgName)

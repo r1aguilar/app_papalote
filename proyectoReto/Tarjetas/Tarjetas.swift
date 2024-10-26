@@ -38,7 +38,7 @@ struct Actividad2: Identifiable, Codable {
         case idActividad = "id_actividad"
         case idZona = "id_zona"
         case nombre
-        case listaTarjetas = "lista_tarjetas"
+        case listaTarjetas = "tarjetas"
     }
 }
 
@@ -83,3 +83,102 @@ extension Actividad2 {
         ])]
 }
 
+class ActividadesDataManager {
+    static let shared = ActividadesDataManager()
+    @Published private(set) var actividades: [Actividad2] = []
+    private let apiURL = URL(string: "https://r1aguilar.pythonanywhere.com/actividades")!
+    
+    private init() {
+        cargarDatosLocales()
+        Task {
+            await sincronizarDatos()
+        }
+    }
+    
+    private func cargarDatosLocales() {
+        if let datosRecuperados = try? Data(contentsOf: rutaArchivo()),
+           let datosDecodificados = try? JSONDecoder().decode([Actividad2].self, from: datosRecuperados) {
+            self.actividades = datosDecodificados
+            print("Datos locales cargados: \(datosDecodificados.count) actividades")
+        }
+    }
+    
+    private func rutaArchivo() -> URL {
+        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return url.appendingPathComponent("Actividades.json")
+    }
+    
+    private func guardarDatos() {
+        if let codificado = try? JSONEncoder().encode(actividades) {
+            try? codificado.write(to: rutaArchivo())
+        }
+    }
+    
+    func sincronizarDatos() async {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: apiURL)
+            let nuevasActividades = try JSONDecoder().decode([Actividad2].self, from: data)
+            
+            if nuevasActividades != actividades {
+                DispatchQueue.main.async {
+                    self.actividades = nuevasActividades
+                    self.guardarDatos()
+                }
+            }
+        } catch {
+            print("Error sincronizando datos: \(error)")
+        }
+    }
+    
+    func obtenerActividadesPorZona(_ idZona: Int) -> [Actividad2] {
+        return actividades.filter { $0.idZona == idZona }
+    }
+}
+
+
+// Extensión para hacer comparable Actividad2
+extension Actividad2: Equatable {
+    static func == (lhs: Actividad2, rhs: Actividad2) -> Bool {
+        return lhs.idActividad == rhs.idActividad &&
+               lhs.idZona == rhs.idZona &&
+               lhs.nombre == rhs.nombre &&
+               lhs.listaTarjetas == rhs.listaTarjetas
+    }
+}
+
+// Extensión para hacer comparable Tarjeta
+extension Tarjeta: Equatable {
+    static func == (lhs: Tarjeta, rhs: Tarjeta) -> Bool {
+        return lhs.idTarjeta == rhs.idTarjeta &&
+               lhs.tipo == rhs.tipo &&
+               lhs.texto == rhs.texto &&
+               lhs.imagenUrl == rhs.imagenUrl &&
+               lhs.ordenLista == rhs.ordenLista
+    }
+}
+
+// ViewModel simplificado
+@MainActor
+class ActividadesViewModel: ObservableObject {
+    @Published private(set) var actividadesFiltradas: [Actividad2] = []
+    private let idZona: Int
+    
+    init(idZona: Int) {
+        self.idZona = idZona
+        actualizarActividades()
+        
+        // Observar cambios en ActividadesDataManager
+        NotificationCenter.default.addObserver(self,
+                                             selector: #selector(actualizarActividades),
+                                             name: NSNotification.Name("ActividadesActualizadas"),
+                                             object: nil)
+    }
+    
+    @objc private func actualizarActividades() {
+        actividadesFiltradas = ActividadesDataManager.shared.obtenerActividadesPorZona(idZona)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}

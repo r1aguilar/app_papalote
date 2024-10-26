@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct proyectoRetoApp: App {
+    init(){
+        _ = ActividadesDataManager.shared
+    }
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
         WindowGroup {

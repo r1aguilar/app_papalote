@@ -28,11 +28,22 @@ extension UIScreen{
 
 let colores : [Int : Color] = [
     1 : Color(red: 1.0, green: 0.475, blue: 0.137), // Expreso
-    5 : Color(red: 1.0, green: 0.192, blue: 0.106), // Comunico
-    6 : Color(red: 0.333, green: 0.804, blue: 0.816), // Pertenezco
+    2 : Color(red: 0.16, green: 0.43, blue: 0.73), // Comunico
+    3 : Color(red: 0.56, green: 0.79, blue: 0.28), // Pertenezco
     4 : Color(red: 0.475, green: 0.275, blue: 0.643), // Comprendo
-    3 : Color(red: 0.56, green: 0.79, blue: 0.28), // Soy
-    2 : Color(red: 0.16, green: 0.43, blue: 0.73) // Pequenos
+    5 : Color(red: 1.0, green: 0.192, blue: 0.106), // Soy
+    6 : Color(red: 0.333, green: 0.804, blue: 0.816), // Pequenos
+    0 : Color.black
+]
+
+let mapaDetallado : [Int : String] = [
+    1 : "NaranjaDetallado",
+    2 : "AzulDetallado",
+    3 : "VerdeDetallado",
+    4 : "MoradoDetallado",
+    5 : "RojoDetallado",
+    6 : "CelesteDetallado",
+    0 : "p"
 ]
 
 // Add this class to your App delegate or create it if it doesn't exist

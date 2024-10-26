@@ -18,7 +18,12 @@
 		433861012CBF631A00EAC170 /* Piso1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 433860FF2CBF631A00EAC170 /* Piso1.svg */; };
 		433861022CBF631A00EAC170 /* Piso2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 433861002CBF631A00EAC170 /* Piso2.svg */; };
 		943181262CC82FD4004DD50E /* MapaDetalladoZona.swift in Sources */ = {isa = PBXBuildFile; fileRef = 943181252CC82FD4004DD50E /* MapaDetalladoZona.swift */; };
-		94F691D82CC87820001F1097 /* RojoDetalladoSvg2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94F691D72CC87820001F1097 /* RojoDetalladoSvg2.svg */; };
+		94529DE02CC9D3E90072FA5B /* RojoDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DDF2CC9D3E90072FA5B /* RojoDetallado.svg */; };
+		94529DEE2CCA09940072FA5B /* AzulDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DE92CCA09940072FA5B /* AzulDetallado.svg */; };
+		94529DEF2CCA09940072FA5B /* VerdeDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DED2CCA09940072FA5B /* VerdeDetallado.svg */; };
+		94529DF02CCA09940072FA5B /* CelesteDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DEA2CCA09940072FA5B /* CelesteDetallado.svg */; };
+		94529DF12CCA09940072FA5B /* NaranjaDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DEC2CCA09940072FA5B /* NaranjaDetallado.svg */; };
+		94529DF22CCA09940072FA5B /* MoradoDetallado.svg in Resources */ = {isa = PBXBuildFile; fileRef = 94529DEB2CCA09940072FA5B /* MoradoDetallado.svg */; };
 		A4666F082CBDCAD0003AD55B /* Zona.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4666F072CBDCAD0003AD55B /* Zona.swift */; };
 		A4666F0A2CBDCAE7003AD55B /* zonaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4666F092CBDCAE7003AD55B /* zonaManager.swift */; };
 		A47D21292CBB2E4E00BCD187 /* proyectoRetoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47D21282CBB2E4E00BCD187 /* proyectoRetoApp.swift */; };
@@ -42,7 +47,12 @@
 		433860FF2CBF631A00EAC170 /* Piso1.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Piso1.svg; sourceTree = "<group>"; };
 		433861002CBF631A00EAC170 /* Piso2.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Piso2.svg; sourceTree = "<group>"; };
 		943181252CC82FD4004DD50E /* MapaDetalladoZona.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapaDetalladoZona.swift; sourceTree = "<group>"; };
-		94F691D72CC87820001F1097 /* RojoDetalladoSvg2.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = RojoDetalladoSvg2.svg; sourceTree = "<group>"; };
+		94529DDF2CC9D3E90072FA5B /* RojoDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = RojoDetallado.svg; sourceTree = "<group>"; };
+		94529DE92CCA09940072FA5B /* AzulDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = AzulDetallado.svg; sourceTree = "<group>"; };
+		94529DEA2CCA09940072FA5B /* CelesteDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = CelesteDetallado.svg; sourceTree = "<group>"; };
+		94529DEB2CCA09940072FA5B /* MoradoDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MoradoDetallado.svg; sourceTree = "<group>"; };
+		94529DEC2CCA09940072FA5B /* NaranjaDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NaranjaDetallado.svg; sourceTree = "<group>"; };
+		94529DED2CCA09940072FA5B /* VerdeDetallado.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = VerdeDetallado.svg; sourceTree = "<group>"; };
 		A4666F072CBDCAD0003AD55B /* Zona.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zona.swift; sourceTree = "<group>"; };
 		A4666F092CBDCAE7003AD55B /* zonaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = zonaManager.swift; sourceTree = "<group>"; };
 		A47D21252CBB2E4E00BCD187 /* proyectoReto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = proyectoReto.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,7 +122,12 @@
 		433860FA2CBF62F000EAC170 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				94F691D72CC87820001F1097 /* RojoDetalladoSvg2.svg */,
+				94529DE92CCA09940072FA5B /* AzulDetallado.svg */,
+				94529DEA2CCA09940072FA5B /* CelesteDetallado.svg */,
+				94529DEB2CCA09940072FA5B /* MoradoDetallado.svg */,
+				94529DEC2CCA09940072FA5B /* NaranjaDetallado.svg */,
+				94529DED2CCA09940072FA5B /* VerdeDetallado.svg */,
+				94529DDF2CC9D3E90072FA5B /* RojoDetallado.svg */,
 				433860FF2CBF631A00EAC170 /* Piso1.svg */,
 				433861002CBF631A00EAC170 /* Piso2.svg */,
 			);
@@ -221,8 +236,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94529DEE2CCA09940072FA5B /* AzulDetallado.svg in Resources */,
+				94529DEF2CCA09940072FA5B /* VerdeDetallado.svg in Resources */,
+				94529DF02CCA09940072FA5B /* CelesteDetallado.svg in Resources */,
+				94529DF12CCA09940072FA5B /* NaranjaDetallado.svg in Resources */,
+				94529DF22CCA09940072FA5B /* MoradoDetallado.svg in Resources */,
 				433861012CBF631A00EAC170 /* Piso1.svg in Resources */,
-				94F691D82CC87820001F1097 /* RojoDetalladoSvg2.svg in Resources */,
+				94529DE02CC9D3E90072FA5B /* RojoDetallado.svg in Resources */,
 				433861022CBF631A00EAC170 /* Piso2.svg in Resources */,
 				A47D21302CBB2E5000BCD187 /* Preview Assets.xcassets in Resources */,
 				A47D212D2CBB2E5000BCD187 /* Assets.xcassets in Resources */,

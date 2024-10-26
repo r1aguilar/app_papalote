@@ -59,18 +59,20 @@ struct ZonaDetallada: View, Identifiable {
                     Spacer()
                     
                     // Footer con botón "Ir a la vista de mapa"
-                    NavigationLink(destination: MapaDetalladoZona { selectedId in
+                    NavigationLink(destination: MapaDetalladoZona(onSelectPath:  { selectedId in
                         enfocarActividadId = selectedId
-                    }) {
+                    }, idZona: idZona)) {
                         Text("Ir a la vista de mapa")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: 220)
-                            .background(colores[idZona]!)
+                            .background(colores[idZona] ?? Color.gray) // Manejo de color seguro
                             .cornerRadius(10)
                     }
                     .padding(.top, 10)
+
+
                 }
                 .navigationBarBackButtonHidden(true)
                 .onAppear {
@@ -97,7 +99,7 @@ struct CeldaJugador: View {
                 .frame(width: 35)
                 .background(Color(white: 0.85))
                 .clipShape(Circle())
-                .offset(x: (UIScreen.main.bounds.width / 2) - 210)
+                .offset(x: (UIScreen.screenWidth / 2) - 200)
             Text(unaActividad.nombre)
                 .font(.headline)
                 .foregroundColor(.black)

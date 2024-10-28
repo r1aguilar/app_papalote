@@ -1,11 +1,19 @@
+//
+//  vistaPertenezco.swift
+//  proyectoReto
+//
+//  Created by Dodi on 13/10/24.
+//
+
 import SwiftUI
 
 struct TemplateActividad2: View {
     var unaActividad: Actividad2
+    @ObservedObject var zonasData = ZonasData()
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             ZStack {
                 Button(action: {
                     dismiss()
@@ -19,7 +27,7 @@ struct TemplateActividad2: View {
                         .background(Color(white: 1))
                         .clipShape(Circle())
                 }
-                .offset(x: -UIScreen.main.bounds.width/2 + 35, y: -UIScreen.screenHeight/2 + 45)
+                .offset(x: -UIScreen.main.bounds.width / 2 + 35, y: -UIScreen.screenHeight / 2 + 45)
                 .zIndex(2)
                 
                 GeometryReader { geometry in
@@ -28,23 +36,24 @@ struct TemplateActividad2: View {
                             gradient: Gradient(
                                 stops: [
                                     .init(color: colores[unaActividad.idZona]!.opacity(0.6), location: 0),
-                                    .init(color: colores[unaActividad.idZona]!.opacity(0.4), location: 1)]
-                                    ),
-                                    startPoint: .topLeading, // Start from the top left corner
-                                    endPoint: .bottomTrailing // End at the bottom right corner
-                            ))
-                            .mask(LinearGradient(
+                                    .init(color: colores[unaActividad.idZona]!.opacity(0.4), location: 1)
+                                ]
+                            ),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                        .mask(LinearGradient(
                             gradient: Gradient(
-                            stops: [.init(color: .black, location: 0.4),
-                            .init(color: .black.opacity(0), location: 0.8)]
-                        ),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
-                    .frame(height: 1200) // Set your desired height
+                                stops: [.init(color: .black, location: 0.4),
+                                        .init(color: .black.opacity(0), location: 0.8)]
+                            ),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                        .frame(height: 1200) // Set your desired height
                 }
                 .edgesIgnoringSafeArea(.all)
-
+                
                 // Main content with sticky header
                 VStack {
                     // Sticky header for activity name
@@ -54,7 +63,23 @@ struct TemplateActividad2: View {
                         .font(.largeTitle)
                         .foregroundColor(colores[unaActividad.idZona]!)
                         .zIndex(1) // Make sure it stays on top
-
+                    
+                    // Display toggle button for the corresponding zone
+                    if let currentZone = zonasData.zonas.first(where: { $0.id == unaActividad.idZona }) {
+                        HStack {
+                            Text(currentZone.nombre)
+                            Button(action: {
+                                toggleCompletado(for: currentZone.id)
+                            }) {
+                                Text(currentZone.completado ? "Desmarcar" : "Completar")
+                                    .foregroundColor(currentZone.completado ? .red : .green)
+                                    .padding(5)
+                                    .background(Color.white)
+                                    .cornerRadius(5)
+                            }
+                        }
+                    }
+                    
                     ScrollView {
                         VStack {
                             // Renderiza las tarjetas de la actividad
@@ -71,10 +96,16 @@ struct TemplateActividad2: View {
             .navigationBarBackButtonHidden(true)
         }
     }
-
+    
+    private func toggleCompletado(for id: Int) {
+        if let index = zonasData.zonas.firstIndex(where: { $0.id == id }) {
+            zonasData.zonas[index].completado.toggle()
+        }
+    }
+    
     private func tarjetaView(tarjeta: Tarjeta, actividad: Actividad2) -> some View {
         let cardWidth: CGFloat = UIScreen.screenWidth - 50 // Adjust width as needed
-
+        
         switch tarjeta.tipo {
         case 1:
             return AnyView(
@@ -87,7 +118,7 @@ struct TemplateActividad2: View {
                         .font(.headline)
                         .padding()
                 }
-                .frame(width: cardWidth) // Width applied to the container
+                    .frame(width: cardWidth) // Width applied to the container
             )
         case 2:
             return AnyView(
@@ -100,7 +131,7 @@ struct TemplateActividad2: View {
                         Text(tarjeta.texto ?? "")
                             .font(.headline)
                             .padding()
-
+                        
                         if let imagenUrl = tarjeta.imagenUrl, let url = URL(string: imagenUrl) {
                             CacheAsyncImage(url: url) { phase in
                                 switch phase {
@@ -124,7 +155,7 @@ struct TemplateActividad2: View {
                     }
                     .padding(8)
                 }
-                .frame(width: cardWidth) // Width applied to the container
+                    .frame(width: cardWidth) // Width applied to the container
             )
         case 3:
             return AnyView(
@@ -160,7 +191,7 @@ struct TemplateActividad2: View {
                     }
                     .padding(8)
                 }
-                .frame(width: cardWidth) // Width applied to the container
+                    .frame(width: cardWidth) // Width applied to the container
             )
         case 4:
             return AnyView(
@@ -169,7 +200,7 @@ struct TemplateActividad2: View {
                     Circle()
                         .fill(colores[unaActividad.idZona]!) // Use the color for the background
                         .frame(width: cardWidth, height: cardWidth) // Slightly larger than the image
-
+                    
                     // Image
                     if let imagenUrl = tarjeta.imagenUrl, let url = URL(string: imagenUrl) {
                         CacheAsyncImage(url: url) { phase in
@@ -182,7 +213,7 @@ struct TemplateActividad2: View {
                                     .resizable()
                                     .scaledToFill()
                                     .clipShape(Circle()) // Ensure the image is also circular
-                                    .frame(width: cardWidth-20, height: cardWidth-20) // Set size for the image
+                                    .frame(width: cardWidth - 20, height: cardWidth - 20) // Set size for the image
                             case .failure(let error):
                                 Text("Error loading image: \(error)")
                                     .frame(width: cardWidth, height: cardWidth) // Placeholder size
@@ -190,20 +221,16 @@ struct TemplateActividad2: View {
                                 fatalError()
                             }
                         }
-                    } else {
-                        EmptyView()
                     }
                 }
-                .frame(width: cardWidth, height: cardWidth) // Width applied to the container
-                .padding(8)
+                    .frame(width: cardWidth, height: cardWidth) // Width applied to the container
             )
-
         default:
             return AnyView(EmptyView())
         }
     }
-
 }
+
 
 #Preview {
     TemplateActividad2(unaActividad: Actividad2(idActividad: 3, idZona: 2, nombre: "PEPE", listaTarjetas: Tarjeta.datosEjemplo))

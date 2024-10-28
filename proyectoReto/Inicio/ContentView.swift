@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var zonaManager = ZonaManager()
+    @ObservedObject var zonaData = ZonasData()
+    
     
     var body: some View {
         NavigationView {
@@ -24,40 +25,37 @@ struct ContentView: View {
                     HStack {
                         VStack {
                             // Para cada de las zonas (1 a 3) se despliega su imagen correspondiente, y en caso de haberla completado, su marco
-                            ForEach(zonaManager.zonas.prefix(3)) { zona in
-                                NavigationLink(destination: vistaPertenezco(zonaManager: zonaManager, zona: zona)) {
-                                    Image(zona.imagen)
-                                        .resizable()
-                                        .frame(width: 170, height: 170)
-                                        .overlay(RoundedRectangle(cornerRadius: 10)
-                                            .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
-                                }
+                            ForEach(zonaData.zonas.prefix(3)) { zona in
+                                Image(zona.imagen)
+                                    .resizable()
+                                    .frame(width: 170, height: 170)
+                                    .overlay(RoundedRectangle(cornerRadius: 10)
+                                        .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
                             }
                         }
                         // Segunda mitad de zonas desplegadas, todas son botones (navigation link) que llevan a la "vistaPertenezco" que deberia de ser vista zona, es placeholder
                         VStack {
-                            ForEach(zonaManager.zonas.dropFirst(3)) { zona in
-                                NavigationLink(destination: vistaPertenezco(zonaManager: zonaManager, zona: zona)) {
-                                    Image(zona.imagen)
-                                        .resizable()
-                                        .frame(width: 170, height: 170)
-                                        .overlay(RoundedRectangle(cornerRadius: 10)
-                                            .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
-                                }
+                            ForEach(zonaData.zonas.dropFirst(3)) { zona in
+                                Image(zona.imagen)
+                                    .resizable()
+                                    .frame(width: 170, height: 170)
+                                    .overlay(RoundedRectangle(cornerRadius: 10)
+                                        .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
                             }
+                            
                         }
                     }
-                    .padding()
+                    
                 }
-                //Cargar los saves
-                .onAppear {
-                    zonaManager.loadState()
-                }
+                .padding()
+            }
+            //Cargar los saves
+            .onAppear {
+                zonaData.loadState()
             }
         }
     }
 }
-
 
 #Preview{
     ContentView()

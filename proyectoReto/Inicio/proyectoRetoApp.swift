@@ -11,34 +11,45 @@ import Foundation
 @main
 struct proyectoRetoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @State private var usuario: user? = nil
-
+    @State private var usuario: user?
+    
     init() {
         _ = ActividadesDataManager.shared
-        usuario = cargarUsuario() // Cargar usuario en la inicialización
+        // Necesitamos usar _usuario para modificar el State directamente en init
+        _usuario = State(initialValue: cargarUsuarioInicial())
     }
     
     var body: some Scene {
         WindowGroup {
             if let usuario = usuario {
-                InicioView() // Vista para usuarios existentes
+                InicioView()
             } else {
-                SignIn() // Vista de inicio de sesión
+                SignIn()
             }
         }
     }
-}
-
-func cargarUsuario() -> user? {
-    let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("sesion.json")
     
-    guard let url = fileURL else { return nil }
-    
-    if let datosRecuperados = try? Data(contentsOf: url) {
-        let decoder = JSONDecoder()
-        if let usuario = try? decoder.decode(user.self, from: datosRecuperados) {
-            return usuario
+    private func cargarUsuarioInicial() -> user? {
+        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("sesion.json")
+        
+        guard let url = fileURL else {
+            print("No hace el url")
+            return nil
+        }
+        
+        do {
+            let datosRecuperados = try Data(contentsOf: url)
+            if let jsonString = String(data: datosRecuperados, encoding: .utf8) {
+                print("Contenido del archivo JSON: \(jsonString)")
+            }
+            
+            let decoder = JSONDecoder()
+            let usuarioCargado = try decoder.decode(user.self, from: datosRecuperados)
+            print("Usuario cargado exitosamente: \(usuarioCargado)")
+            return usuarioCargado
+        } catch {
+            print("Error cargando usuario: \(error)")
+            return nil
         }
     }
-    return nil
 }

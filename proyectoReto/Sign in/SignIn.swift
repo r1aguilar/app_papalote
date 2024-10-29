@@ -10,6 +10,7 @@ struct SignIn: View {
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
     @State private var isLoading: Bool = false // Nuevo estado para el progreso
+    @State private var isAuthenticated: Bool = false // Nueva variable de autenticación
     
     @Environment(\.colorScheme) private var colorScheme
     
@@ -22,57 +23,63 @@ struct SignIn: View {
     }
     
     var body: some View {
-        ZStack {
-            Color.init(red: 193/255, green: 214/255, blue: 47/255).ignoresSafeArea()
-            
-            VStack {
-                Image("LogoVerde")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 350)
-                    .offset(x: -4)
-                    .padding(.bottom, 30)
+        NavigationStack{
+            ZStack {
+                Color.init(red: 193/255, green: 214/255, blue: 47/255).ignoresSafeArea()
                 
-                Button {
-                    withAnimation(.easeInOut) {
-                        isLoginViewShown = true
+                VStack {
+                    Image("LogoVerde")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 350)
+                        .offset(x: -4)
+                        .padding(.bottom, 30)
+                    
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isLoginViewShown = true
+                        }
+                    } label: {
+                        Text("Comenzar")
+                            .font(.title2)
+                            .bold()
+                            .foregroundColor(.white)
                     }
-                } label: {
-                    Text("Comenzar")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.white)
+                    .frame(height: 50)
+                    .frame(width: 280)
+                    .background(
+                        LinearGradient(colors: [colores[3]!, .green], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .cornerRadius(30)
+                    .shadow(radius: 8, y: 10)
+                    .padding()
                 }
-                .frame(height: 50)
-                .frame(width: 280)
-                .background(
-                    LinearGradient(colors: [colores[3]!, .green], startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-                .cornerRadius(30)
-                .shadow(radius: 8, y: 10)
-                .padding()
+                
+                if isLoginViewShown {
+                    loginView
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+                        .zIndex(isRegisterViewShown ? 0 : 1)
+                }
+                
+                if isRegisterViewShown {
+                    registerView
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)
+                        ))
+                        .zIndex(isRegisterViewShown ? 1 : 0)
+                }
             }
-            
-            if isLoginViewShown {
-                loginView
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .trailing),
-                        removal: .move(edge: .leading)
-                    ))
-                    .zIndex(isRegisterViewShown ? 0 : 1)
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("Aceptar")))
             }
-            
-            if isRegisterViewShown {
-                registerView
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .trailing),
-                        removal: .move(edge: .leading)
-                    ))
-                    .zIndex(isRegisterViewShown ? 1 : 0)
+            .navigationBarBackButtonHidden(true)
+            .navigationDestination(isPresented: $isAuthenticated) {
+                InicioView() // Navega a InicioView cuando isAuthenticated es true
             }
-        }
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("Aceptar")))
         }
     }
     
@@ -278,8 +285,7 @@ struct SignIn: View {
             if let usuario = try? JSONDecoder().decode(user.self, from: data) {
                 guardarUsuario(usuario: usuario)
                 DispatchQueue.main.async {
-                    // Navegar a InicioView() aquí
-                    // Puedes usar una variable de estado o algún mecanismo para cambiar la vista
+                    self.isAuthenticated = true
                 }
             } else {
                 DispatchQueue.main.async {
@@ -297,14 +303,54 @@ struct SignIn: View {
     private func guardarUsuario(usuario: user) {
         let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("sesion.json")
         
-        guard let url = fileURL else { return }
+        guard let url = fileURL else {
+            print("Error: No se pudo crear la URL del archivo")
+            return
+        }
         
         do {
             let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted // Para mejor legibilidad del JSON
             let jsonData = try encoder.encode(usuario)
+            
+            // Intentamos convertir el JSON a String para verificar su contenido
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("JSON a guardar: \(jsonString)")
+            }
+            
             try jsonData.write(to: url)
+            
+            // Verificamos que el archivo se haya creado
+            if FileManager.default.fileExists(atPath: url.path) {
+                // Leemos el archivo inmediatamente para verificar
+                let savedData = try Data(contentsOf: url)
+                if let savedString = String(data: savedData, encoding: .utf8) {
+                    print("Contenido guardado en el archivo: \(savedString)")
+                }
+                
+                // Intentamos decodificar inmediatamente para verificar
+                let decoder = JSONDecoder()
+                if let savedUser = try? decoder.decode(user.self, from: savedData) {
+                    print("Verificación: Usuario guardado y decodificado correctamente")
+                    print("Usuario guardado: \(savedUser)")
+                } else {
+                    print("Error: No se pudo decodificar el usuario después de guardarlo")
+                }
+            } else {
+                print("Error: El archivo no se creó correctamente")
+            }
         } catch {
-            print("Error guardando el usuario: \(error)")
+            print("Error detallado guardando el usuario: \(error)")
+            if let encodingError = error as? EncodingError {
+                switch encodingError {
+                case .invalidValue(let value, let context):
+                    print("Valor inválido: \(value)")
+                    print("Contexto del error: \(context.debugDescription)")
+                    print("Ruta de codificación: \(context.codingPath)")
+                default:
+                    print("Error de codificación desconocido: \(encodingError)")
+                }
+            }
         }
     }
 

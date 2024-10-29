@@ -63,6 +63,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        // Imprimir el contenido del directorio de documentos
+        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            do {
+                let files = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+                print("Archivos en el directorio de documentos:")
+                files.forEach { print($0) }
+            } catch {
+                print("Error al listar archivos: \(error)")
+            }
+        }
         return AppDelegate.orientationLock
     }
 }

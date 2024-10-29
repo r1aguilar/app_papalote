@@ -86,7 +86,7 @@ extension Actividad2 {
 class ActividadesDataManager {
     static let shared = ActividadesDataManager()
     @Published private(set) var actividades: [Actividad2] = []
-    private let apiURL = URL(string: "https://r1aguilar.pythonanywhere.com/actividades")!
+    private let apiURL = URL(string: apiURLbase + "actividades")!
     
     private init() {
         cargarDatosLocales()

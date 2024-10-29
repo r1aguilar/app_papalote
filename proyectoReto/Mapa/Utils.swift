@@ -46,6 +46,8 @@ let mapaDetallado : [Int : String] = [
     0 : "p"
 ]
 
+let apiURLbase : String = "https://r1aguilar.pythonanywhere.com/"
+
 // Add this class to your App delegate or create it if it doesn't exist
 class AppDelegate: NSObject, UIApplicationDelegate {
     static var orientationLock = UIInterfaceOrientationMask.portrait {

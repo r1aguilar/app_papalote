@@ -1,22 +1,24 @@
-//
-//  SignIn.swift
-//  proyectoReto
-//
-//  Created by user254414 on 10/28/24.
-//
-
 import SwiftUI
 
 struct SignIn: View {
-    @State private var name: String = ""
+    @State private var username: String = ""
+    @State private var correo: String = ""
     @State private var password: String = ""
     @State private var showPassword: Bool = false
     @State private var isLoginViewShown: Bool = false
     @State private var isRegisterViewShown: Bool = false
+    @State private var showAlert: Bool = false
+    @State private var alertMessage: String = ""
+    @State private var isLoading: Bool = false // Nuevo estado para el progreso
+    
     @Environment(\.colorScheme) private var colorScheme
     
     var isSignInButtonDisabled: Bool {
-        [name, password].contains(where: \.isEmpty)
+        [correo, password].contains(where: \.isEmpty) || isLoading // Deshabilitar si está cargando
+    }
+    
+    var isRegisterButtonDisabled: Bool {
+        [correo, password, username].contains(where: \.isEmpty)
     }
     
     var body: some View {
@@ -53,13 +55,24 @@ struct SignIn: View {
             
             if isLoginViewShown {
                 loginView
-                    .transition(.move(edge: isRegisterViewShown ? .leading : .trailing))
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing),
+                        removal: .move(edge: .leading)
+                    ))
+                    .zIndex(isRegisterViewShown ? 0 : 1)
             }
             
             if isRegisterViewShown {
                 registerView
-                    .transition(.move(edge: isLoginViewShown ? .trailing : .leading))
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing),
+                        removal: .move(edge: .leading)
+                    ))
+                    .zIndex(isRegisterViewShown ? 1 : 0)
             }
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("Aceptar")))
         }
     }
     
@@ -67,7 +80,7 @@ struct SignIn: View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
                 .fill(.thinMaterial)
-                .padding(.vertical, 120)
+                .padding(.vertical, UIScreen.screenHeight / 6)
                 .padding(.horizontal, 25)
                 .shadow(radius: 8, y: 10)
                 .environment(\.colorScheme, .light)
@@ -79,7 +92,7 @@ struct SignIn: View {
                     .padding(.bottom, 25)
                     .foregroundStyle(Color.black)
                 
-                TextField("Name", text: $name, prompt: Text("Ingresa tu correo").foregroundColor(Color(white: 0.4)).bold())
+                TextField("Correo", text: $correo, prompt: Text("Ingresa tu correo").foregroundColor(Color(white: 0.4)).bold())
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .overlay {
@@ -94,26 +107,39 @@ struct SignIn: View {
                 passwordField
                 
                 Button {
-                    print("Hacer Log In")
+                    iniciarSesion()
                 } label: {
-                    Text("Ingresar")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.white)
+                    if isLoading {
+                        ProgressView() // Ícono de carga
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(width: 20, height: 20) // Tamaño del ícono
+                    } else {
+                        Text("Ingresar")
+                            .font(.title2)
+                            .bold()
+                            .foregroundColor(.white)
+                    }
                 }
                 .frame(height: 50)
                 .frame(width: 280)
                 .background(
+                    isSignInButtonDisabled ?
+                    LinearGradient(colors: [Color(white: 0.75), Color(white: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing) :
                     LinearGradient(colors: [colores[3]!, .green], startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
                 .cornerRadius(30)
                 .shadow(radius: 8, y: 10)
                 .padding(.top, 40)
+                .disabled(isSignInButtonDisabled) // Deshabilitar el botón si está cargando
                 
                 Button {
-                    withAnimation(.easeInOut) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         isLoginViewShown = false
-                        isRegisterViewShown = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                isRegisterViewShown = true
+                            }
+                        }
                     }
                 } label: {
                     Text("¿No tienes una cuenta?").padding(.top, 10)
@@ -127,12 +153,12 @@ struct SignIn: View {
             }
         }
     }
-    
+
     private var registerView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
                 .fill(.thinMaterial)
-                .padding(.vertical, 120)
+                .padding(.vertical, UIScreen.screenHeight/6)
                 .padding(.horizontal, 25)
                 .shadow(radius: 8, y: 10)
                 .environment(\.colorScheme, .light)
@@ -144,7 +170,7 @@ struct SignIn: View {
                     .padding(.bottom, 25)
                     .foregroundStyle(Color.black)
                 
-                TextField("Name", text: $name, prompt: Text("Ingresa tu correo").foregroundColor(Color(white: 0.4)).bold())
+                TextField("Correo", text: $correo, prompt: Text("Ingresa tu correo").foregroundColor(Color(white: 0.4)).bold())
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .overlay {
@@ -156,7 +182,7 @@ struct SignIn: View {
                     .padding(.bottom, 5)
                     .frame(width: 335)
                 
-                TextField("Name", text: $name, prompt: Text("Nombre de usuario").foregroundColor(Color(white: 0.4)).bold())
+                TextField("Nombre de usuario", text: $username, prompt: Text("Nombre de usuario").foregroundColor(Color(white: 0.4)).bold())
                     .multilineTextAlignment(.center)
                     .padding(10)
                     .overlay {
@@ -181,6 +207,8 @@ struct SignIn: View {
                 .frame(height: 50)
                 .frame(width: 280)
                 .background(
+                    isRegisterButtonDisabled ?
+                    LinearGradient(colors: [Color(white: 0.75), Color(white: 0.55)], startPoint: .topLeading, endPoint: .bottomTrailing) :
                     LinearGradient(colors: [colores[3]!, .green], startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
                 .cornerRadius(30)
@@ -188,9 +216,13 @@ struct SignIn: View {
                 .padding(.top, 40)
                 
                 Button {
-                    withAnimation(.easeInOut) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         isRegisterViewShown = false
-                        isLoginViewShown = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                isLoginViewShown = true
+                            }
+                        }
                     }
                 } label: {
                     Text("¿Ya tienes una cuenta?").padding(.top, 10)
@@ -205,6 +237,77 @@ struct SignIn: View {
         }
     }
     
+    private func iniciarSesion() {
+        isLoading = true // Comenzar la carga
+        
+        guard let url = URL(string: "\(apiURLbase)login") else { return }
+        
+        let loginData: [String: String] = ["correo": correo, "password": password]
+        guard let jsonData = try? JSONEncoder().encode(loginData) else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false // Detener la carga
+            }
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.alertMessage = "No se pudo ingresar: \(error.localizedDescription)"
+                    self.showAlert = true
+                    self.correo = ""
+                    self.password = ""
+                }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    self.alertMessage = "No se recibió datos de la respuesta."
+                    self.showAlert = true
+                    self.correo = ""
+                    self.password = ""
+                }
+                return
+            }
+            
+            if let usuario = try? JSONDecoder().decode(user.self, from: data) {
+                guardarUsuario(usuario: usuario)
+                DispatchQueue.main.async {
+                    // Navegar a InicioView() aquí
+                    // Puedes usar una variable de estado o algún mecanismo para cambiar la vista
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.alertMessage = "No se pudo ingresar: datos inválidos."
+                    self.showAlert = true
+                    self.correo = ""
+                    self.password = ""
+                }
+            }
+        }
+        
+        task.resume()
+    }
+    
+    private func guardarUsuario(usuario: user) {
+        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("sesion.json")
+        
+        guard let url = fileURL else { return }
+        
+        do {
+            let encoder = JSONEncoder()
+            let jsonData = try encoder.encode(usuario)
+            try jsonData.write(to: url)
+        } catch {
+            print("Error guardando el usuario: \(error)")
+        }
+    }
+
     private var passwordField: some View {
         ZStack {
             Group {

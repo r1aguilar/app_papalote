@@ -36,7 +36,7 @@ struct MapaDetalladoZona: View {
                         .background(Color.black)
                         .clipShape(.circle)
                 }
-                .offset(x: -UIScreen.main.bounds.width/2 + 45, y: -UIScreen.screenHeight/2 + 45)
+                .offset(x: -UIScreen.main.bounds.width/2 + 60, y: -UIScreen.screenHeight/2 + 45)
                 .zIndex(2)
                 
                 GeometryReader { geometry in

@@ -49,7 +49,11 @@ struct ZonaDetallada: View, Identifiable {
                                 .edgesIgnoringSafeArea(.all)
                             
                             List(actividadModel.actividadesFiltradas) { actividad in
-                                NavigationLink(destination: TemplateActividad2(unaActividad: actividad)) {
+                                NavigationLink(destination: TemplateActividad2(unaActividad: actividad)
+                                    .onDisappear {
+                                        enfocarActividadNombre = nil // Restablece a nil cuando se regresa de TemplateActividad2
+                                    }
+                                ) {
                                     CeldaJugador(
                                         unaActividad: actividad,
                                         idZona: idZona,

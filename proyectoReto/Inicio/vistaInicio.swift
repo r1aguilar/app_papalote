@@ -20,7 +20,7 @@ struct InicioView: View {
                 Text("Inicio")
                     .font(.system(size: 40))
                     .fontWeight(.black)
-                    .offset(x: -UIScreen.screenWidth/2.8, y: -UIScreen.screenHeight/2.54)
+                    .offset(x: -UIScreen.screenWidth/3.2, y: -UIScreen.screenHeight/2.54)
                 // Background circles
                 ZStack {
                     Circle()

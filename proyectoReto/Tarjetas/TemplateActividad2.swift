@@ -9,8 +9,9 @@ import SwiftUI
 
 struct TemplateActividad2: View {
     var unaActividad: Actividad2
-    @ObservedObject var zonasData = ZonasData()
+    @ObservedObject var zonasData = ZonasData2()
     @Environment(\.dismiss) private var dismiss
+    @State private var isActivityCompleted = false
     
     var body: some View {
         NavigationStack {
@@ -27,7 +28,7 @@ struct TemplateActividad2: View {
                         .background(Color(white: 1))
                         .clipShape(Circle())
                 }
-                .offset(x: -UIScreen.main.bounds.width / 2 + 35, y: -UIScreen.screenHeight / 2 + 45)
+                .offset(x: -UIScreen.main.bounds.width / 2 + 35, y: -UIScreen.screenHeight / 2 + 60)
                 .zIndex(2)
                 
                 GeometryReader { geometry in
@@ -64,21 +65,24 @@ struct TemplateActividad2: View {
                         .foregroundColor(colores[unaActividad.idZona]!)
                         .zIndex(1) // Make sure it stays on top
                     
-                    // Display toggle button for the corresponding zone
-                    if let currentZone = zonasData.zonas.first(where: { $0.id == unaActividad.idZona }) {
-                        HStack {
-                            Text(currentZone.nombre)
-                            Button(action: {
-                                toggleCompletado(for: currentZone.id)
-                            }) {
-                                Text(currentZone.completado ? "Desmarcar" : "Completar")
-                                    .foregroundColor(currentZone.completado ? .red : .green)
-                                    .padding(5)
-                                    .background(Color.white)
-                                    .cornerRadius(5)
+                    Button(action: {
+                        ActividadUsuario.crearActividadUsuario(idUsuario: usuarioGlobal!.idUsuario, idActividad: unaActividad.idActividad) { success in
+                            if success {
+                                print("Actividad creada exitosamente.")
+                                actividadesCompletadas[unaActividad.idActividad] = true
+                                isActivityCompleted = true
+                            } else {
+                                print("Error al crear la actividad.")
                             }
                         }
+                    }) {
+                        Text(actividadesCompletadas[unaActividad.idActividad] ? "Completada" : "Completar")
+                            .foregroundColor(actividadesCompletadas[unaActividad.idActividad] ? .red : .green)
+                            .padding(5)
+                            .background(Color.white)
+                            .cornerRadius(5)
                     }
+                    .disabled(isActivityCompleted)
                     
                     ScrollView {
                         VStack {
@@ -93,13 +97,10 @@ struct TemplateActividad2: View {
                 }
                 .padding(.top, 5) // Padding to push the content below the gradient
             }
+            .onAppear{
+                isActivityCompleted = actividadesCompletadas[unaActividad.idActividad]
+            }
             .navigationBarBackButtonHidden(true)
-        }
-    }
-    
-    private func toggleCompletado(for id: Int) {
-        if let index = zonasData.zonas.firstIndex(where: { $0.id == id }) {
-            zonasData.zonas[index].completado.toggle()
         }
     }
     
@@ -223,7 +224,8 @@ struct TemplateActividad2: View {
                         }
                     }
                 }
-                    .frame(width: cardWidth, height: cardWidth) // Width applied to the container
+                .frame(width: cardWidth, height: cardWidth) // Width applied to the container
+                    .padding(.vertical,20)
             )
         default:
             return AnyView(EmptyView())

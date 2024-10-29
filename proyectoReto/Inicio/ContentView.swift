@@ -8,56 +8,120 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var zonaData = ZonasData()
-    
+    @ObservedObject var zonaData = ZonasData2()
+    @Environment(\.dismiss) private var dismiss
+    @State private var listaCompletados: [Bool] = []
+    @State private var isDataLoaded = false
     
     var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
+        NavigationStack {
+            ZStack {
+                // Background with ultra-thin material effect
+                Color.clear.background(.ultraThinMaterial).ignoresSafeArea()
+                
                 VStack {
-                    Text("Menu de Medallas")
-                        .font(.title)
-                        .bold()
-                        .padding()
-                    Text("Las zonas que tengan un borde amarillo a su alrededor, han sido completadas 100%")
+                    ZStack {
+                        Text("Medallas")
+                            .font(.system(size: 31))
+                            .fontWeight(.black)
+                            .padding()
+                        
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "arrow.left")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 25)
+                                .foregroundColor(.white)
+                                .bold()
+                                .padding(10)
+                                .background(Color(white: 0.3))
+                                .clipShape(Circle())
+                        }
+                        .offset(x: -UIScreen.main.bounds.width/2 + 35)
+                    }
                     Divider()
                     
-                    HStack {
-                        VStack {
-                            // Para cada de las zonas (1 a 3) se despliega su imagen correspondiente, y en caso de haberla completado, su marco
-                            ForEach(zonaData.zonas.prefix(3)) { zona in
-                                Image(zona.imagen)
-                                    .resizable()
-                                    .frame(width: 170, height: 170)
-                                    .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
+                    if isDataLoaded {
+                        // Display medals in rows with two items per row
+                        ScrollView {
+                            VStack(spacing: 10) {
+                                ForEach(0..<zonaData.zonas.count / 2, id: \.self) { rowIndex in
+                                    HStack(spacing: -15) {
+                                        // Left item in row
+                                        medalla(zona: zonaData.zonas[rowIndex * 2], listaCompletados: self.listaCompletados)
+                                        
+                                        // Right item in row, if it exists
+                                        if rowIndex * 2 + 1 < zonaData.zonas.count {
+                                            medalla(zona: zonaData.zonas[rowIndex * 2 + 1], listaCompletados: self.listaCompletados)
+                                        }
+                                    }
+                                }
+                                
+                                // Handle an odd number of zones by adding a final row with a single item
+                                if zonaData.zonas.count % 2 != 0 {
+                                    HStack {
+                                        medalla(zona: zonaData.zonas.last!, listaCompletados: self.listaCompletados)
+                                        Spacer() // to align the single item to the left
+                                    }
+                                }
                             }
+                            .padding(5)
                         }
-                        // Segunda mitad de zonas desplegadas, todas son botones (navigation link) que llevan a la "vistaPertenezco" que deberia de ser vista zona, es placeholder
-                        VStack {
-                            ForEach(zonaData.zonas.dropFirst(3)) { zona in
-                                Image(zona.imagen)
-                                    .resizable()
-                                    .frame(width: 170, height: 170)
-                                    .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(zona.completado ? Color.yellow : Color.clear, lineWidth: 10))
-                            }
-                            
-                        }
+                    } else {
+                        // Show a loading indicator while waiting for data
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(2)
                     }
-                    
                 }
-                .padding()
+                .onAppear {
+                    zonaData.obtenerListaZonasCompletadas { completadas in
+                        listaCompletados = completadas ?? Array(repeating: false, count: zonaData.zonas.count)
+                        isDataLoaded = true
+                    }
+                }
             }
-            //Cargar los saves
-            .onAppear {
-                zonaData.loadState()
-            }
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
 
-#Preview{
+#Preview {
     ContentView()
 }
 
+struct medalla: View {
+    var zona: Zona3
+    var listaCompletados : [Bool]
+    var body: some View {
+        ZStack {
+            // Background card with rounded corners and ultra-thin material
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.ultraThinMaterial)
+                .frame(width: 200, height: 200)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(listaCompletados[zona.id-1] ? Color.yellow : Color.clear, lineWidth: 4)
+                )
+            
+            VStack {
+                Text(zona.nombre)
+                    .font(.system(size: 30))
+                    .foregroundStyle(colores[zona.id]!)
+                    .bold()
+                    .padding(.top, 5)
+                
+                // Medal image with border overlay for completion status
+                Image(iconosZonas[zona.id] ?? "cat")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 140, height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .offset(y: -10)
+            }
+        }
+        .scaleEffect(0.9)
+    }
+}

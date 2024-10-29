@@ -48,6 +48,29 @@ let mapaDetallado : [Int : String] = [
 
 let apiURLbase : String = "https://r1aguilar.pythonanywhere.com/"
 
+var numActividades : Int = 0
+
+var actividadesCompletadas: [Bool] = Array(repeating: false, count: 80)
+
+var numActividadesCompletadasPorZona : [Int] = [Int]()
+
+var usuarioGlobal : user? = nil
+
+extension String {
+    func removeAccents() -> String {
+        return self.folding(options: .diacriticInsensitive, locale: .current)
+    }
+}
+
+let iconosZonas : [Int : String] = [
+    1 : "IconoExpreso",
+    2 : "IconoComunico",
+    3 : "IconoPertenezco",
+    4 : "IconoComprendo",
+    5 : "IconoSoy",
+    6 : "IconoPeque"
+]
+
 // Add this class to your App delegate or create it if it doesn't exist
 class AppDelegate: NSObject, UIApplicationDelegate {
     static var orientationLock = UIInterfaceOrientationMask.portrait {
@@ -64,15 +87,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         // Imprimir el contenido del directorio de documentos
-        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            do {
-                let files = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
-                print("Archivos en el directorio de documentos:")
-                files.forEach { print($0) }
-            } catch {
-                print("Error al listar archivos: \(error)")
-            }
-        }
+//        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//            do {
+//                let files = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+//                print("Archivos en el directorio de documentos:")
+//                files.forEach { print($0) }
+//            } catch {
+//                print("Error al listar archivos: \(error)")
+//            }
+//        }
         return AppDelegate.orientationLock
     }
 }
@@ -94,4 +117,48 @@ extension View {
     func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
         self.modifier(DeviceRotationViewModifier(action: action))
     }
+}
+
+// Modifica la función para incluir un closure
+func obtenerActividadesCompletadas(idUsuario: Int, completion: @escaping ([Bool]) -> Void) {
+    guard let url = URL(string: apiURLbase + "actividades_completadas") else {
+        print("URL no válida")
+        return
+    }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let parametros = ["id_usuario": idUsuario]
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: parametros) else {
+        print("Error al codificar el JSON")
+        return
+    }
+    
+    request.httpBody = jsonData
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Error en el request: \(error)")
+            completion([]) // Retornar un arreglo vacío en caso de error
+            return
+        }
+        
+        guard let data = data else {
+            print("No se recibieron datos")
+            completion([]) // Retornar un arreglo vacío en caso de error
+            return
+        }
+        
+        if let actividades = try? JSONDecoder().decode([Bool].self, from: data) {
+            print(actividades)
+            DispatchQueue.main.async {
+                completion(actividades) // Llamar al closure con los datos decodificados
+            }
+        } else {
+            print("Error al decodificar la respuesta JSON")
+            completion([]) // Retornar un arreglo vacío en caso de error
+        }
+    }.resume()
 }

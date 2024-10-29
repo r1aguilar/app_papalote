@@ -100,6 +100,7 @@ class ActividadesDataManager {
            let datosDecodificados = try? JSONDecoder().decode([Actividad2].self, from: datosRecuperados) {
             self.actividades = datosDecodificados
             print("Datos locales cargados: \(datosDecodificados.count) actividades")
+            numActividades = datosDecodificados.count
         }
     }
     

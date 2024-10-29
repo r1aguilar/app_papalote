@@ -284,6 +284,11 @@ struct SignIn: View {
             
             if let usuario = try? JSONDecoder().decode(user.self, from: data) {
                 guardarUsuario(usuario: usuario)
+                usuarioGlobal = usuario
+//                verificarActividadesCompletadas()
+                obtenerActividadesCompletadas(idUsuario: usuario.idUsuario) { completadas in
+                    actividadesCompletadas = completadas
+                }
                 DispatchQueue.main.async {
                     self.isAuthenticated = true
                 }
@@ -400,6 +405,24 @@ struct SignIn: View {
         .buttonStyle(PlainButtonStyle())
         .offset(y: UIScreen.screenHeight / 3.1)
     }
+    
+//    private func verificarActividadesCompletadas() {
+//        let fileManager = FileManager.default
+//        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        let fileURL = documentsDirectory.appendingPathComponent("actividadesCompletadas.json")
+//        
+//        if fileManager.fileExists(atPath: fileURL.path) {
+//            do {
+//                let data = try Data(contentsOf: fileURL)
+//                actividadesCompletadas = try JSONDecoder().decode([Bool].self, from: data)
+//            } catch {
+//                print("Error al decodificar actividadesCompletadas: \(error)")
+//            }
+//        } else {
+//            actividadesCompletadas = Array(repeating: false, count: numActividades+1)
+//        }
+//    }
+    
 }
 
 #Preview {

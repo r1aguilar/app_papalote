@@ -12,6 +12,7 @@ import Foundation
 struct proyectoRetoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @State private var usuario: user?
+    @State private var isLoading = false
     
     init() {
         _ = ActividadesDataManager.shared
@@ -46,10 +47,24 @@ struct proyectoRetoApp: App {
             let decoder = JSONDecoder()
             let usuarioCargado = try decoder.decode(user.self, from: datosRecuperados)
             print("Usuario cargado exitosamente: \(usuarioCargado)")
+            loadActividadesCompletadas(for: usuarioCargado.idUsuario)
+            usuarioGlobal = usuarioCargado
             return usuarioCargado
         } catch {
             print("Error cargando usuario: \(error)")
             return nil
         }
     }
+    
+    // Función para cargar actividades completadas
+    private func loadActividadesCompletadas(for idUsuario: Int) {
+        guard !isLoading else { return } // Evitar múltiples cargas
+        isLoading = true
+        
+        obtenerActividadesCompletadas(idUsuario: idUsuario) { completadas in
+            actividadesCompletadas = completadas
+            isLoading = false // Cambiar el estado de carga a false después de obtener los datos
+        }
+    }
+    
 }

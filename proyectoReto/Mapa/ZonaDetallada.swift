@@ -53,7 +53,7 @@ struct ZonaDetallada: View, Identifiable {
                                     CeldaJugador(
                                         unaActividad: actividad,
                                         idZona: idZona,
-                                        isHighlighted: actividad.nombre == enfocarActividadNombre
+                                        isHighlighted: actividad.nombre.removeAccents() == enfocarActividadNombre
                                     )
                                     .padding(.vertical, 8)
                                     .padding(.horizontal)
@@ -89,13 +89,19 @@ struct ZonaDetallada: View, Identifiable {
                     }
                     .navigationBarBackButtonHidden(true)
                     .onAppear {
-                        if let nombre = enfocarActividadNombre,
-                           let actividad = actividadModel.actividadesFiltradas.first(where: { $0.nombre == nombre }) {
-                            // Desplaza al elemento con el ID correspondiente al nombre
-                            proxy.scrollTo(actividad.idActividad, anchor: .center)
+                        if let nombre = enfocarActividadNombre?.removeAccents() {
+                            actividadModel.actividadesFiltradas.forEach { actividad in
+                                print("Comparing: \(nombre) - \(actividad.nombre.removeAccents())")
+                            }
+                            
+                            if let actividad = actividadModel.actividadesFiltradas.first(where: { $0.nombre.removeAccents().caseInsensitiveCompare(nombre) == .orderedSame }) {
+                                // Desplaza al elemento con el ID correspondiente al nombre
+                                proxy.scrollTo(actividad.idActividad, anchor: .center)
+                            }
                         }
                     }
                     .background(.thinMaterial.opacity(0.8))
+
                 }
             }
         }
@@ -130,7 +136,7 @@ struct CeldaJugador: View {
         .background(.ultraThinMaterial)
         .clipShape(.rect(cornerSize: CGSize(width: 18, height: 5)))
         .overlay(
-            isHighlighted ? RoundedRectangle(cornerRadius: 10)
+            isHighlighted ? RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.white, lineWidth: 4) // Borde iluminado
                 : nil
         )

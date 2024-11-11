@@ -22,7 +22,7 @@ struct proyectoRetoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if let usuario = usuario {
+            if usuario != nil {
                 InicioView()
             } else {
                 SignIn()

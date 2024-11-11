@@ -8,7 +8,7 @@ struct ContentViewMapas: View {
     @State private var tituloPiso: String = "Piso 1" // Initial title
     @State private var selectedZona: ZonaDetallada? // Variable para la vista seleccionada
     @Environment(\.presentationMode) var presentationMode // Para controlar la presentación
-
+    
     var body: some View {
         NavigationStack {
             Button(action: {
@@ -25,14 +25,14 @@ struct ContentViewMapas: View {
                     .clipShape(Circle())
             }
             .offset(x: -UIScreen.screenWidth / 2 + 35)
-
+            
             ZStack {
                 Color.clear
                     .contentShape(Rectangle())
                     .onTapGesture {
                         clickedPath = PathData() // Reset clickedPath to its initial state
                     }
-
+                
                 VStack {
                     Text(tituloPiso)
                         .font(.system(size: 40, weight: .black))
@@ -48,7 +48,7 @@ struct ContentViewMapas: View {
             .navigationBarBackButtonHidden(true)
         }
     }
-
+    
     private func interactiveMapView(svgName: String) -> some View {
         InteractiveMap(svgName: svgName) { pathData in
             InteractiveShape(pathData)
@@ -80,7 +80,7 @@ struct ContentViewMapas: View {
                         default:
                             idZona = 0
                         }
-
+                        
                         // Asigna la vista seleccionada a selectedZona
                         selectedZona = ZonaDetallada(TituloZona: String(clickedPath.name), idZona: idZona)
                     }
@@ -90,7 +90,7 @@ struct ContentViewMapas: View {
         }
         .id(svgName)
     }
-
+    
     private func fadeTransition(to newSvgName: String, title: String) {
         withAnimation(.easeInOut(duration: 0.3)) {
             opacity = 0 // Fade out

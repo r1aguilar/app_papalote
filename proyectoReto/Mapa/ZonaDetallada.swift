@@ -9,13 +9,13 @@ struct ZonaDetallada: View, Identifiable {
     @Environment(\.dismiss) private var dismiss
     
     @StateObject private var actividadModel: ActividadesViewModel
-        
+    
     init(TituloZona: String, idZona: Int) {
         self.TituloZona = TituloZona
         self.idZona = idZona
         _actividadModel = StateObject(wrappedValue: ActividadesViewModel(idZona: idZona))
     }
-
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -105,7 +105,7 @@ struct ZonaDetallada: View, Identifiable {
                         }
                     }
                     .background(.thinMaterial.opacity(0.8))
-
+                    
                 }
             }
         }
@@ -117,7 +117,7 @@ struct CeldaJugador: View {
     var unaActividad: Actividad2
     var idZona: Int
     var isHighlighted: Bool // Propiedad para determinar si se debe resaltar
-
+    
     var body: some View {
         HStack {
             Text("\(unaActividad.idActividad)")
@@ -142,11 +142,11 @@ struct CeldaJugador: View {
         .overlay(
             isHighlighted ? RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.white, lineWidth: 4) // Borde iluminado
-                : nil
+            : nil
         )
     }
 }
 
 #Preview {
-    ZonaDetallada(TituloZona: "Pertenezco", idZona: 2) 
+    ZonaDetallada(TituloZona: "Pertenezco", idZona: 2)
 }

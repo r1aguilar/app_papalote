@@ -125,3 +125,4 @@ struct medalla: View {
         .scaleEffect(0.9)
     }
 }
+

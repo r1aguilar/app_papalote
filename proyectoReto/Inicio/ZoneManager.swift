@@ -24,7 +24,7 @@ class ZonasData: ObservableObject {
     init() {
         loadState()  // Carga el estado guardado cuando se inicia la app
     }
-
+    
     func saveState() {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(zonas) {
@@ -32,7 +32,7 @@ class ZonasData: ObservableObject {
             try? data.write(to: url)
         }
     }
-
+    
     func loadState() {
         let url = getDocumentsDirectory().appendingPathComponent("zonas2.json")
         if let data = try? Data(contentsOf: url) {
@@ -42,7 +42,7 @@ class ZonasData: ObservableObject {
             }
         }
     }
-
+    
     func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
@@ -168,20 +168,20 @@ class ZonasData2: ObservableObject {
 
 //class ZonasData3: ObservableObject {
 //    @Published var zonas: [Zona3] = []
-//    
+//
 //    init() {
 //        loadState() // Cargar el estado de las zonas y luego inicializar numActividadesCompletadas
 //    }
-//    
+//
 //    private func inicializarNumActividadesCompletadas() {
 //        // Definir el tamaño de `numActividadesCompletadasPorZona` en función de la cantidad de zonas
 //        let numZonas = zonas.count + 1 // +1 porque IDs empiezan en 1, no en 0
 //        numActividadesCompletadasPorZona = Array(repeating: 0, count: numZonas)
-//        
+//
 //        // URL del archivo JSON
 //        let url = getDocumentsDirectory().appendingPathComponent("numActividadesCompletadasPorZona.json")
 //        let fileManager = FileManager.default
-//        
+//
 //        // Verificar si el archivo existe
 //        if fileManager.fileExists(atPath: url.path) {
 //            // Si el archivo existe, intentar cargar y decodificar los datos
@@ -189,7 +189,7 @@ class ZonasData2: ObservableObject {
 //               let savedCounts = try? JSONDecoder().decode([Int].self, from: data) {
 //                // Ajustar el tamaño de `numActividadesCompletadasPorZona` para reflejar el nuevo número de zonas
 //                let minSize = min(savedCounts.count, numZonas)
-//                
+//
 //                // Copiar los valores decodificados en la lista global hasta el tamaño mínimo
 //                for i in 0..<minSize {
 //                    numActividadesCompletadasPorZona[i] = savedCounts[i]
@@ -200,33 +200,33 @@ class ZonasData2: ObservableObject {
 //            guardarNumActividadesCompletadas()
 //        }
 //    }
-//    
+//
 //    func incrementarActividadCompletada(paraZona idZona: Int) {
 //        guard idZona > 0 && idZona < numActividadesCompletadasPorZona.count else {
 //            print("Error: El idZona está fuera de los límites.")
 //            return
 //        }
-//        
+//
 //        // Incrementar el contador de actividades completadas para la zona especificada
 //        numActividadesCompletadasPorZona[idZona] += 1
-//        
+//
 //        // Guardar el nuevo estado en el archivo JSON
 //        guardarNumActividadesCompletadas()
 //    }
-//    
+//
 //    func decrementarActividadCompletada(paraZona idZona: Int) {
 //        guard idZona > 0 && idZona < numActividadesCompletadasPorZona.count else {
 //            print("Error: El idZona está fuera de los límites.")
 //            return
 //        }
-//        
+//
 //        // Incrementar el contador de actividades completadas para la zona especificada
 //        numActividadesCompletadasPorZona[idZona] -= 1
-//        
+//
 //        // Guardar el nuevo estado en el archivo JSON
 //        guardarNumActividadesCompletadas()
 //    }
-//    
+//
 //    private func guardarNumActividadesCompletadas() {
 //        // Guardar `numActividadesCompletadasPorZona` en JSON
 //        let url = getDocumentsDirectory().appendingPathComponent("numActividadesCompletadasPorZona.json")
@@ -234,11 +234,11 @@ class ZonasData2: ObservableObject {
 //            try? data.write(to: url)
 //        }
 //    }
-//    
+//
 //    func loadState() {
 //        let url = getDocumentsDirectory().appendingPathComponent("zonas3.json")
 //        let fileManager = FileManager.default
-//        
+//
 //        if fileManager.fileExists(atPath: url.path) {
 //            if let localData = try? Data(contentsOf: url),
 //               let decodedZonas = try? JSONDecoder().decode([Zona3].self, from: localData) {
@@ -250,17 +250,17 @@ class ZonasData2: ObservableObject {
 //            obtenerDatosDesdeServidor()
 //        }
 //    }
-//    
+//
 //    private func verificarDatosConServidor(localZonas: [Zona3]) {
 //        guard let urlEndpoint = URL(string: apiURLbase + "zonas") else { return }
-//        
+//
 //        URLSession.shared.dataTask(with: urlEndpoint) { data, response, error in
 //            guard let data = data, error == nil,
 //                  let serverZonas = try? JSONDecoder().decode([Zona3].self, from: data) else {
 //                print("Error al obtener datos del servidor: \(error?.localizedDescription ?? "Desconocido")")
 //                return
 //            }
-//            
+//
 //            if serverZonas != localZonas {
 //                DispatchQueue.main.async {
 //                    self.guardarDatosLocalmente(zonas: serverZonas)
@@ -270,17 +270,17 @@ class ZonasData2: ObservableObject {
 //            }
 //        }.resume()
 //    }
-//    
+//
 //    private func obtenerDatosDesdeServidor() {
 //        guard let urlEndpoint = URL(string: apiURLbase + "zonas") else { return }
-//        
+//
 //        URLSession.shared.dataTask(with: urlEndpoint) { data, response, error in
 //            guard let data = data, error == nil,
 //                  let serverZonas = try? JSONDecoder().decode([Zona3].self, from: data) else {
 //                print("Error al obtener datos del servidor: \(error?.localizedDescription ?? "Desconocido")")
 //                return
 //            }
-//            
+//
 //            DispatchQueue.main.async {
 //                self.guardarDatosLocalmente(zonas: serverZonas)
 //                self.zonas = serverZonas
@@ -288,14 +288,14 @@ class ZonasData2: ObservableObject {
 //            }
 //        }.resume()
 //    }
-//    
+//
 //    private func guardarDatosLocalmente(zonas: [Zona3]) {
 //        let url = getDocumentsDirectory().appendingPathComponent("zonas3.json")
 //        if let data = try? JSONEncoder().encode(zonas) {
 //            try? data.write(to: url)
 //        }
 //    }
-//    
+//
 //    func getDocumentsDirectory() -> URL {
 //        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 //    }

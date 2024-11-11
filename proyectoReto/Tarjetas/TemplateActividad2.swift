@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TemplateActividad2: View {
     var unaActividad: Actividad2
-    @ObservedObject var zonasData = ZonasData2()
     @Environment(\.dismiss) private var dismiss
     @State private var isActivityCompleted = false
     

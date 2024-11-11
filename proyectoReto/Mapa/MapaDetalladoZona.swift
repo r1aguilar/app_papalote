@@ -13,7 +13,7 @@ struct MapaDetalladoZona: View {
     @State private var finalScale: CGFloat = 1.0
     @State private var currentPosition: CGSize = .zero
     @State private var dragOffset: CGSize = .zero
-
+    
     private let minScale: CGFloat = 1
     private let maxScale: CGFloat = 4.0
     
@@ -36,7 +36,7 @@ struct MapaDetalladoZona: View {
                         .background(Color.black)
                         .clipShape(.circle)
                 }
-                .offset(x: -UIScreen.main.bounds.width/2 + 60, y: -UIScreen.screenHeight/2 + 45)
+                .offset(x: -UIScreen.main.bounds.width/2 + 45, y: -UIScreen.screenHeight/2 + 60)
                 .zIndex(2)
                 
                 GeometryReader { geometry in
@@ -83,7 +83,7 @@ struct MapaDetalladoZona: View {
         // Variables para los offsets
         var offX: CGFloat = 0
         var offY: CGFloat = 0
-
+        
         // Asignación de valores a offX y offY según idZona
         switch idZona {
         case 1:
@@ -108,7 +108,7 @@ struct MapaDetalladoZona: View {
             offX = 0
             offY = 0 // Valores por defecto si no coincide con ningún caso
         }
-
+        
         return InteractiveMap(svgName: svgName) { pathData in
             InteractiveShape(pathData)
                 .stroke(clickedPath == pathData ? pathDictionary[pathData.name]?.0 ?? Color.white.opacity(0.4) : pathDictionary[pathData.name]?.0 ?? Color.white.opacity(1))
@@ -169,9 +169,9 @@ struct ZoomableScrollView<Content: View>: View {
         
         return (
             -effectiveWidth - margin,
-            effectiveWidth + margin,
-            -effectiveHeight - verticalMargin,
-            effectiveHeight + verticalMargin
+             effectiveWidth + margin,
+             -effectiveHeight - verticalMargin,
+             effectiveHeight + verticalMargin
         )
     }
     
@@ -196,7 +196,7 @@ struct ZoomableScrollView<Content: View>: View {
             content
                 .scaleEffect(currentScale)
                 .offset(x: currentPosition.width + dragOffset.width,
-                       y: currentPosition.height + dragOffset.height)
+                        y: currentPosition.height + dragOffset.height)
                 .gesture(
                     SimultaneousGesture(
                         MagnificationGesture()
